@@ -1,0 +1,21 @@
+{
+  "archivo_salida": "data/salida/informe_procesado",
+  "duracion_minima_segundos": 30,
+  "mes": "Mayo 2026",
+
+  "asesores": {
+    "1303": "Miguel",
+    "1302": "Lorena",
+    "1301": "Luisa",
+    "1403": "Maria Jose",
+    "1304": "Jary",
+    "1305": "Leida"
+  },
+
+  "semanas": {
+    "semana_1": {"fecha_inicio": "2026-05-02", "fecha_fin": "2026-05-09"},
+    "semana_2": {"fecha_inicio": "2026-05-11", "fecha_fin": "2026-05-16"},
+    "semana_3": {"fecha_inicio": "2026-05-19", "fecha_fin": "2026-05-23"},
+    "semana_4": {"fecha_inicio": "2026-05-25", "fecha_fin": "2026-05-30"}
+  }
+}
