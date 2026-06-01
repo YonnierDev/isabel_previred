@@ -1,5 +1,5 @@
 {
-  "archivo_salida": "data/salida/informe_procesado",
+  "archivo_salida": "data/salida",
   "duracion_minima_segundos": 30,
   "mes": "Mayo 2026",
 

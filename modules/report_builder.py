@@ -52,12 +52,37 @@ class ReportGenerator:
     def __init__(self, config: dict):
         self.config = config
 
+    def _nombre_mes(self) -> str:
+        import unicodedata
+        mes = self.config.get("mes", "informe")
+        norm = unicodedata.normalize("NFD", mes)
+        norm = "".join(c for c in norm if unicodedata.category(c) != "Mn")
+        return norm.lower().replace(" ", "_")
+
+    def _sufijo_semanas(self, df: pd.DataFrame) -> str:
+        if df.empty or "Semana" not in df.columns:
+            return ""
+        labels = sorted(df["Semana"].dropna().unique(), key=lambda x: int(x.replace("SEM", "")))
+        if not labels:
+            return ""
+        if len(labels) == 1:
+            return f"_{labels[0].lower()}"
+        return f"_{labels[0].lower()}_{labels[-1].lower()}"
+
     def generar_excel(self, datos_procesados: pd.DataFrame, datos_agrupados: dict) -> None:
         import pathlib
-        archivo_salida = str(pathlib.Path(self.config["archivo_salida"]).with_suffix(".xlsx"))
-        os.makedirs(os.path.dirname(archivo_salida), exist_ok=True)
-
         df = datos_agrupados.get("por_semana_asesor", pd.DataFrame())
+        carpeta = pathlib.Path(self.config["archivo_salida"])
+        nombre_base = f"informe_{self._nombre_mes()}{self._sufijo_semanas(df)}"
+        os.makedirs(carpeta, exist_ok=True)
+
+        candidato = carpeta / f"{nombre_base}.xlsx"
+        contador = 1
+        while candidato.exists():
+            candidato = carpeta / f"{nombre_base}_{contador}.xlsx"
+            contador += 1
+
+        archivo_salida = str(candidato)
 
         with pd.ExcelWriter(archivo_salida, engine="openpyxl") as writer:
             ws = writer.book.create_sheet("Informe")
