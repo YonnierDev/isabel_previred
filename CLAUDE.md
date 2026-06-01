@@ -19,10 +19,11 @@ pip install -r requirements.txt
 ## Configuración mensual
 
 Todo lo que cambia mes a mes está en `config.json`:
-- `mes` — etiqueta del mes (aparece en la salida)
+
+- `mes` — etiqueta del mes, ej. `"Mayo 2026"` — se usa para generar el nombre del archivo de salida
 - `asesores` — mapeo `"código"` → nombre; los códigos vienen de la columna **Fuente** del Excel
-- `semanas` — 4 rangos de fechas (`fecha_inicio` / `fecha_fin` en formato `YYYY-MM-DD`)
-- `archivo_salida` — ruta del `.xlsx` generado (la extensión se fuerza a `.xlsx` aunque se escriba `.xls`)
+- `semanas` — rangos de fechas (`fecha_inicio` / `fecha_fin` en formato `YYYY-MM-DD`); puede haber menos de 4 si el mes no está completo
+- `archivo_salida` — **solo la carpeta** de destino, ej. `"data/salida"`; el nombre del archivo se genera automático
 
 ## Arquitectura
 
@@ -48,7 +49,9 @@ El DataFrame devuelto por `procesar()` ya solo contiene filas que pasaron todos 
 Recibe el DataFrame filtrado y agrupa por semana. Las etiquetas de semana se generan como `SEM1`…`SEM4` a partir de las claves `semana_1`…`semana_4` del config. Las fechas del rango se muestran como `"01/04 - 11/04"`. Registros cuya fecha cae fuera de todos los rangos se descartan con log.
 
 ### `modules/report_builder.py` — `ReportGenerator`
-Escribe el Excel de salida con `openpyxl`. Actualmente genera una sola hoja **"Informe"** con columnas `Semana | Fechas | Asesor | >= 30 Seg`. Los métodos `_hoja_*` adicionales están presentes pero no se llaman — son candidatos si se necesitan hojas extra.
+Escribe el Excel de salida con `openpyxl`. Genera una sola hoja **"Informe"** con columnas `Semana | Fechas | Asesor | >= 30 Seg`.
+
+El nombre del archivo se construye automáticamente: `informe_{mes}_{rango_semanas}.xlsx` donde el rango se deriva de las semanas que **realmente tienen datos** (no de las configuradas). Ejemplos: `informe_mayo_2026_sem4.xlsx`, `informe_mayo_2026_sem1_sem4.xlsx`. Si ya existe un archivo con ese nombre se agrega sufijo numérico ascendente (`_1`, `_2`, …). Los métodos `_hoja_*` están presentes pero no se llaman — candidatos para hojas extra futuras.
 
 ## Columnas del Excel de entrada
 
